@@ -11,7 +11,7 @@ router.get('/', async (req, res) => {
     }
 })
 
-
+//populate thoughts when thoughts are added to user
 
 //Do the bonus when you get a chance
 
