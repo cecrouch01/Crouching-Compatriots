@@ -4,7 +4,11 @@ const { Thought, User } = require('../../models/index');
 //Views all users
 router.get('/', async (req, res) => {
     try {
-        const userData = await User.find().select('-__v');
+        const userData = await User
+            .find()
+            .populate('friends')
+            .select('-__v');
+
         res.status(200).json(userData);
     } catch(err) {
         res.status(500).json(err);
@@ -14,7 +18,10 @@ router.get('/', async (req, res) => {
 //Views one User
 router.get('/:id', async (req, res) => {
     try {
-        const singleUserData = await User.findOne({ _id: req.params.id }).select('-__v');
+        const singleUserData = await User
+            .findOne({ _id: req.params.id })
+            .populate('friends')
+            .select('-__v');
         
         if(!singleUserData) {
             return res.status(404).json({ message: "No user found"});
@@ -69,7 +76,43 @@ router.delete('/:id', async (req, res) => {
     }
 })
 
+//This updates a user to be friends. 
+router.put('/:userId/friends/:friendId', async (req, res) => {
+    try{
+        const updatedFriend = await User.findOneAndUpdate(
+            { _id: req.params.userId },
+            { $addToSet: { friends: req.params.friendId } },
+            { new: true }
+        );
 
+        if(!updatedFriend) {
+            return res.status(404).json({ message: "No user found" });
+        };
+
+        res.json(updatedFriend)
+    } catch(err) {
+        res.status(500).json(err);
+    }
+});
+
+//This removes a friend from the friend list
+router.delete('/:userId/friends/:friendId', async (req, res) => {
+    try{
+        const removedFriend = await User.findOneAndUpdate(
+            { _id: req.params.userId },
+            { $pull: { friends: req.params.friendId } },
+            { new: true }
+        );
+
+        if(!removedFriend) {
+            return res.status(404).json({ message: "No user found" });
+        };
+
+        res.json(removedFriend)
+    } catch(err) {
+        res.status(500).json(err);
+    }
+});
 //After getting friend data make sure to go back to get to see that the data is populated correctly
 
 
