@@ -5,13 +5,73 @@ const { Thought, User } = require('../../models/index');
 router.get('/', async (req, res) => {
     try {
         const thoughtData = await Thought.find();
-        res.status(201).json(thoughtData);
+        res.json(thoughtData);
     } catch(err) {
-        res.status(500).json(err)
-    }
-})
 
-//populate thoughts when thoughts are added to user
+    }
+});
+
+//View a single thought
+router.get('/:id', async (req, res) => {
+    try {
+        const singleThoughtData = await Thought
+        .findOne({ _id: req.params.id })
+        .select('-__v');
+        if(!singleThoughtData) {
+            return res.status(404).json({ message: "No thought found"});
+        }
+        res.json(singleThoughtData);
+    } catch(err) {
+        res.status(500).json(err);
+    }
+});
+
+//Create a thought
+router.post('/', async (req, res) => {
+    try {
+        const newThought = await Thought.create(req.body);
+        await User.findByIdAndUpdate(
+            {_id: req.body.userId },
+            { $addToSet: {thoughts: newThought._id} }
+        );
+        res.json(newThought);
+    } catch(err) {
+        res.status(500).json(err);
+    }
+});
+
+//Updates a thought
+router.put('/:id', async (req, res) => {
+    try {
+        const updatedThought = await Thought.findOneAndUpdate(
+            {_id: req.params.id},
+            { $set: req.body },
+            { new: true }
+        );
+
+        if(!updatedThought) {
+            return res.status(404).json({ message: "No thought found"});
+        }
+        res.json(updatedThought);
+    } catch(err) {
+        res.status(500).json(err);
+    }
+});
+
+//This deletes a single thought
+router.delete('/:id', async (req, res) => {
+    try {
+        const deletedThought = await Thought.findByIdAndDelete({ _id: req.params.id });
+        if(!deletedThought) {
+            return res.status(404).json({ message: "No thought found"});
+        }
+        res.json(deletedThought);
+    } catch(err) {
+        res.status(500).json(err);
+    }
+});
+
+
 
 //Do the bonus when you get a chance
 

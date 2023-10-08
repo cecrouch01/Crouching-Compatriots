@@ -7,6 +7,7 @@ router.get('/', async (req, res) => {
         const userData = await User
             .find()
             .populate('friends')
+            .populate('thoughts')
             .select('-__v');
 
         res.status(200).json(userData);
@@ -21,6 +22,7 @@ router.get('/:id', async (req, res) => {
         const singleUserData = await User
             .findOne({ _id: req.params.id })
             .populate('friends')
+            .populate('thoughts')
             .select('-__v');
         
         if(!singleUserData) {
@@ -74,7 +76,7 @@ router.delete('/:id', async (req, res) => {
     } catch(err) {
         res.status(500).json(err);
     }
-})
+});
 
 //This updates a user to be friends. 
 router.put('/:userId/friends/:friendId', async (req, res) => {
