@@ -102,6 +102,4 @@ router.delete('/:thoughtId/reactions', async (req, res) => {
     }
 });
 
-//Do the bonus when you get a chance
-
 module.exports = router;
