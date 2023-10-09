@@ -72,7 +72,7 @@ router.delete('/:id', async (req, res) => {
         if(!deletedUser) {
             return res.status(404).json({ message: "No user found" });
         };
-
+        //This deletes all the thoughts associated with a user. 
         for(let i = 0; i < deletedUser.thoughts.length; i++) {
             await Thought.findByIdAndDelete(deletedUser.thoughts[i]._id)
         };
@@ -120,7 +120,5 @@ router.delete('/:userId/friends/:friendId', async (req, res) => {
         res.status(500).json(err);
     }
 });
-//After getting friend data make sure to go back to get to see that the data is populated correctly
-
 
 module.exports = router;
