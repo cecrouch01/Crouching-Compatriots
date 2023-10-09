@@ -67,12 +67,17 @@ router.put('/:id', async (req, res) => {
 //Delete a user
 router.delete('/:id', async (req, res) => {
     try {
-        const deletedUser = await User.findByIdAndDelete({ _id: req.params.id });
+        const deletedUser = await User.findByIdAndDelete(req.params.id);
 
         if(!deletedUser) {
             return res.status(404).json({ message: "No user found" });
         };
-        res.json(deletedUser)
+
+        for(let i = 0; i < deletedUser.thoughts.length; i++) {
+            await Thought.findByIdAndDelete(deletedUser.thoughts[i]._id)
+        };
+
+        res.json(deletedUser);
     } catch(err) {
         res.status(500).json(err);
     }
