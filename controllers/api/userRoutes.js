@@ -79,7 +79,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 //This updates a user to be friends. 
-router.put('/:userId/friends/:friendId', async (req, res) => {
+router.post('/:userId/friends/:friendId', async (req, res) => {
     try{
         const updatedFriend = await User.findOneAndUpdate(
             { _id: req.params.userId },

@@ -71,7 +71,36 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+//This adds a reaction to a thought
+router.post('/:thoughtId/reactions', async (req, res) => {
+    try {
+        const newReaction = await Thought.findOneAndUpdate(
+            { _id: req.params.thoughtId},
+            { $addToSet: {reactions: req.body } },
+            { new: true }
+        );
+        res.json(newReaction);
+    } catch(err) {
+        res.status(500).json(err);
+    }
+});
 
+//This deletes a reaction
+router.delete('/:thoughtId/reactions', async (req, res) => {
+    try {
+        const deletedReaction = await Thought.findByIdAndUpdate(
+            { _id: req.params.thoughtId },
+            { $pull: { reactions: { _id: req.body.id } }},
+            { new: true }
+        );
+        if(!deletedReaction) {
+            return res.status(404).json({ message: "Could not find reaction"});
+        };
+        res.json(deletedReaction);
+    } catch(err) {
+        res.status(500).json(err)
+    }
+});
 
 //Do the bonus when you get a chance
 
